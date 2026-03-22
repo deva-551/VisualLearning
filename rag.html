@@ -246,13 +246,77 @@ html[data-theme=light] .answer-text.hallucinated{color:#9a3412}
 /* Hidden log area */
 .log-area{display:none}
 
-@media(max-width:600px){
+/* ===== TUTORIAL RESPONSIVE ===== */
+@media(max-width:660px){
+  .t-section{padding:60px 16px}
   .problem-row{flex-direction:column;align-items:center}
-  .problem-card{width:90%}
+  .problem-card{width:min(300px,90%)}
   .compare-row{flex-direction:column}
-  .embed-canvas,.search-canvas{height:220px}
-  .demo-content{grid-template-columns:1fr}
-  .demo-left,.demo-right{max-height:200px}
+  .cmp-col{min-width:0;width:100%}
+  .embed-canvas,.search-canvas{height:200px}
+  .skip-link{padding:8px 20px;font-size:14px}
+}
+
+/* ===== MOBILE TAB BAR (base — hidden on desktop) ===== */
+.mobile-tabs{display:none}
+.mob-tab{
+  flex:1;padding:8px 4px 6px;
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  font-size:10px;font-weight:600;letter-spacing:.02em;
+  color:var(--dim);border:none;background:none;cursor:pointer;font-family:inherit;
+  border-top:2px solid transparent;transition:color .2s,border-color .2s;
+  -webkit-tap-highlight-color:transparent
+}
+.mob-tab.active{color:var(--purple);border-top-color:var(--purple)}
+.mob-tab-icon{font-size:19px;line-height:1.2}
+
+/* ===== DEMO RESPONSIVE (≤767px) ===== */
+@media(max-width:767px){
+  /* Full height respecting iOS safe area */
+  .demo-wrap.active{height:100dvh}
+
+  /* Compact top nav — keep it in one row */
+  .demo-nav{padding:0 10px;height:auto;min-height:44px}
+  .demo-nav a:first-child{font-size:11px;flex-shrink:0}
+  .dn-title{font-size:11px;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex-shrink:1}
+  .theme-btn{padding:3px 7px;font-size:10px;flex-shrink:0}
+  .basics-link{font-size:11px;padding:3px 8px}
+  .basics-callout{right:0;min-width:min(220px,calc(100vw - 70px));font-size:11px;padding:10px 12px}
+  .basics-callout::before{right:14px}
+
+  /* Tab-panel layout: replace 3-col grid with single-panel display */
+  .demo-content{display:flex;flex-direction:column;flex:1;overflow:hidden}
+  .demo-left,.demo-middle,.demo-right{display:none;border:none;max-height:none;overflow:hidden}
+  .demo-left.mob-active,.demo-middle.mob-active,.demo-right.mob-active{display:flex;flex-direction:column}
+
+  /* LEFT panel: scrollable document list */
+  .doc-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .legend{flex-wrap:wrap;gap:6px;padding:8px 10px}
+  .doc-upload-btn,.doc-remove-btn{padding:9px}
+
+  /* MIDDLE panel: horizontal-scroll pipeline */
+  .flow-viewport{flex:1;overflow-x:auto;-webkit-overflow-scrolling:touch}
+  .flow-content{padding:14px 20px 14px 16px}
+  .graph-wrap{width:280px;min-height:210px;height:210px}
+  .zoom-bar{top:auto;bottom:8px}
+
+  /* RIGHT panel: sticky header + scrollable list + sticky answer */
+  .q-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .demo-settings{flex-shrink:0}
+  .answer-bar.open{max-height:180px}
+  .answer-inner{padding:10px 12px}
+  .answer-text{font-size:13px;line-height:1.5}
+
+  /* Disable hover tooltips on touch devices */
+  .flow-stage[data-tip]::after{display:none}
+
+  /* Show mobile tab bar */
+  .mobile-tabs{
+    display:flex;flex-shrink:0;
+    background:var(--nav-bg);
+    border-top:1px solid var(--b1);
+    padding-bottom:env(safe-area-inset-bottom,0px)
+  }
 }
 </style>
 </head>
@@ -516,6 +580,20 @@ html[data-theme=light] .answer-text.hallucinated{color:#9a3412}
     </div>
 
   </div>
+  <div class="mobile-tabs" id="mobileTabs">
+    <button class="mob-tab active" data-tab="left" onclick="switchMobTab('left')">
+      <span class="mob-tab-icon">&#x1F4C4;</span>
+      <span>Documents</span>
+    </button>
+    <button class="mob-tab" data-tab="middle" onclick="switchMobTab('middle')">
+      <span class="mob-tab-icon">&#x1F4CA;</span>
+      <span>Visualize</span>
+    </button>
+    <button class="mob-tab" data-tab="right" onclick="switchMobTab('right')">
+      <span class="mob-tab-icon">&#x1F4AC;</span>
+      <span>Ask</span>
+    </button>
+  </div>
   <div class="log-area" id="logArea"></div>
 </div>
 
@@ -668,7 +746,7 @@ function enterDemo() {
   dw.classList.add('active');
   document.body.style.overflow = 'hidden';
   window.scrollTo(0, 0);
-  setTimeout(()=>{initCanvas();renderVS()}, 50);
+  setTimeout(()=>{initCanvas();renderVS();initMobLayout()}, 50);
 }
 function exitDemo() {
   document.getElementById('demoWrap').style.display = 'none';
@@ -678,7 +756,7 @@ function exitDemo() {
 }
 // Auto-init canvas since demo is the default landing view
 document.body.style.overflow = 'hidden';
-setTimeout(()=>{initCanvas();renderVS()}, 50);
+setTimeout(()=>{initCanvas();renderVS();initMobLayout()}, 50);
 
 // Show basics callout after brief pause, auto-dismiss after 7s
 let calloutTimer;
@@ -754,7 +832,13 @@ function initCanvas(){
   resizeCanvas();
   vsCanvas.addEventListener('mousemove',handleHover);
   vsCanvas.addEventListener('mouseleave',hideTooltip);
-  window.addEventListener('resize',()=>{resizeCanvas();renderVS()});
+  vsCanvas.addEventListener('touchmove',e=>{
+    e.preventDefault();
+    const t=e.touches[0];
+    handleHover({clientX:t.clientX,clientY:t.clientY});
+  },{passive:false});
+  vsCanvas.addEventListener('touchend',hideTooltip);
+  window.addEventListener('resize',()=>{initMobLayout();resizeCanvas();renderVS()});
 }
 
 function resizeCanvas(){
@@ -933,6 +1017,8 @@ function zoomOut(){zoomLevel=Math.max(0.8,zoomLevel-0.1);document.getElementById
 
 function dropBall(lineEl,color){
   return new Promise(r=>{
+    // Skip animation if panel is hidden (display:none) — animationend won't fire
+    if(!lineEl.offsetParent){r();return;}
     const ball=document.createElement('div');ball.className='flow-ball';ball.style.background=color;
     lineEl.appendChild(ball);
     requestAnimationFrame(()=>{ball.classList.add('drop');ball.addEventListener('animationend',()=>{ball.remove();r()},{once:true})});
@@ -1046,6 +1132,33 @@ function getAnswer(){const q=QUERIES[currentQuery];const keys=Object.keys(q.answ
 function showSearch(){renderVS();if(document.getElementById('answerBar').classList.contains('open')){const ans=getAnswer();document.getElementById('answerText').className='answer-text'+(ans.cls?' '+ans.cls:'');document.getElementById('answerText').textContent=ans.text;const badge=document.getElementById('qualBadge');badge.className='quality-badge '+ans.qual;badge.textContent=ans.badge}}
 
 function clearSearch(){currentQuery=null;document.getElementById('answerBar').classList.remove('open');const flowQ=document.getElementById('flowQuestion');if(flowQ){flowQ.innerHTML='Ask a question';flowQ.className='flow-doc-block';flowQ.style.borderColor='';flowQ.style.background='';flowQ.style.color=''}const qvec=document.getElementById('qVecBox');if(qvec)qvec.classList.remove('active');const llm=document.getElementById('llmBox');if(llm)llm.classList.remove('active');renderVS()}
+
+// ===================== MOBILE TABS =====================
+let mobActiveTab='left';
+
+function switchMobTab(tab){
+  mobActiveTab=tab;
+  ['left','middle','right'].forEach(t=>{
+    const el=document.querySelector('.demo-'+t);
+    if(el)el.classList.toggle('mob-active',t===tab);
+  });
+  document.querySelectorAll('.mob-tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+  // Re-render canvas when switching to Visualize tab
+  if(tab==='middle')setTimeout(()=>{resizeCanvas();renderVS()},50);
+}
+
+function initMobLayout(){
+  const mob=window.innerWidth<=767;
+  if(mob){
+    switchMobTab(mobActiveTab);
+  }else{
+    // Desktop: remove mob-active so all panels show via grid
+    ['left','middle','right'].forEach(t=>{
+      const el=document.querySelector('.demo-'+t);
+      if(el)el.classList.remove('mob-active');
+    });
+  }
+}
 </script>
 </body>
 </html>
