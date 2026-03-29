@@ -11,6 +11,8 @@
   .header h1{font-size:2.8rem;background:linear-gradient(135deg,#60a5fa,#a78bfa,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:12px}
   .header p{color:#8888aa;font-size:1.1rem;max-width:500px;margin:0 auto}
   .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:24px;padding:40px;max-width:1200px;margin:0 auto}
+  .grid a,.grid .card{height:100%}
+  .grid a{display:block}
   .card{background:linear-gradient(145deg,#12122a,#1a1a3e);border:1px solid #2a2a5e;border-radius:16px;padding:32px;cursor:pointer;transition:all .3s;position:relative;overflow:hidden}
   .card:hover{transform:translateY(-4px);border-color:#6366f1;box-shadow:0 8px 30px rgba(99,102,241,.2)}
   .card.active{border-color:#6366f1}
@@ -53,7 +55,14 @@
       <p>See how documents become vectors, how similarity search works, and how LLMs get grounded answers.</p>
     </div>
   </a>
-  <div class="card coming-soon"><span class="cs-label">COMING SOON</span></div>
+  <a href="transformer.html">
+    <div class="card active">
+      <span class="badge live">LIVE</span>
+      <div class="card-icon tf-icon">TF</div>
+      <h3>Inside a Transformer</h3>
+      <p>See how text flows through tokenization, embedding, self-attention (Q, K, V), and next-word prediction — step by step.</p>
+    </div>
+  </a>
   <div class="card coming-soon"><span class="cs-label">COMING SOON</span></div>
 </div>
 </body>
