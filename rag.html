@@ -1,23 +1,25 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('vl-theme');if(t)document.documentElement.dataset.theme=t})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>RAG — Visual Learning</title>
 <style>
 :root{
   --blue:#3b82f6;--purple:#8b5cf6;--green:#22c55e;--red:#ef4444;
-  --amber:#f59e0b;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316;
-  --bg:#10101e;--nav-bg:#0d0d1a;--s1:#161628;--s2:#1d1d32;--s3:#24243e;
-  --b1:#22223a;--b2:#2e2e50;--ba:#2a2a4e;
-  --text:#f0f0f8;--muted:#8888aa;--dim:#60607a;
-  --graph-bg:#08081a;--vf:#14142e;--vt:#1b1245;
-  --panel:var(--s1);--border:var(--b1)}
+  --amber:#f59e0b;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316}
 html[data-theme=light]{
   --bg:#f2f2f7;--nav-bg:#ffffff;--s1:#ffffff;--s2:#f5f5fa;--s3:#eaeaf2;
   --b1:#d8d8e5;--b2:#c5c5d8;--ba:#c0c0dc;
   --text:#1d1d1f;--muted:#6e6e73;--dim:#9090a8;
   --graph-bg:#f7f7fd;--vf:#eeeeff;--vt:#e5e5f8;
+  --panel:var(--s1);--border:var(--b1)}
+html[data-theme=dark]{
+  --bg:#10101e;--nav-bg:#0d0d1a;--s1:#161628;--s2:#1d1d32;--s3:#24243e;
+  --b1:#22223a;--b2:#2e2e50;--ba:#2a2a4e;
+  --text:#f0f0f8;--muted:#8888aa;--dim:#60607a;
+  --graph-bg:#08081a;--vf:#14142e;--vt:#1b1245;
   --panel:var(--s1);--border:var(--b1)}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
@@ -46,8 +48,9 @@ body{font-family:-apple-system,'SF Pro Display','SF Pro Text','Helvetica Neue',s
 .grad-green{background:linear-gradient(90deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 
 /* Hero section */
-.hero-section{min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#0a0a2e 0%,var(--bg) 70%)}
+.hero-section{min-height:100vh}
 html[data-theme=light] .hero-section{background:radial-gradient(ellipse at 50% 0%,#dde0ff 0%,var(--bg) 70%)}
+html[data-theme=dark] .hero-section{background:radial-gradient(ellipse at 50% 0%,#0a0a2e 0%,var(--bg) 70%)}
 .hero-section .t-body{color:var(--muted)}
 .skip-link{margin-top:28px;font-size:15px;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:-.01em;transition:color .3s;padding:10px 24px;border:1px solid var(--b2);border-radius:100px}
 .skip-link:hover{color:var(--text);border-color:var(--dim)}
@@ -116,8 +119,9 @@ html[data-theme=light] .hero-section{background:radial-gradient(ellipse at 50% 0
 .cmp-col.yes .verdict{color:var(--green)}
 
 /* CTA section */
-.cta-section{min-height:60vh;background:radial-gradient(ellipse at 50% 100%,#0a0a2e 0%,var(--bg) 70%)}
+.cta-section{min-height:60vh}
 html[data-theme=light] .cta-section{background:radial-gradient(ellipse at 50% 100%,#e0e0ff 0%,var(--bg) 70%)}
+html[data-theme=dark] .cta-section{background:radial-gradient(ellipse at 50% 100%,#0a0a2e 0%,var(--bg) 70%)}
 .cta-btn{display:inline-block;margin-top:32px;padding:16px 40px;border-radius:100px;font-size:19px;font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(135deg,#6366f1,#8b5cf6);border:none;cursor:pointer;transition:all .3s;text-decoration:none}
 .cta-btn:hover{transform:scale(1.04);box-shadow:0 8px 40px rgba(99,102,241,.3)}
 
@@ -445,7 +449,7 @@ html[data-theme=light] .answer-text.hallucinated{color:#9a3412}
     <a href="index.html">&larr; All Topics</a>
     <span class="dn-title">RAG — Interactive Demo</span>
     <div style="display:flex;align-items:center;gap:12px">
-      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">☀️ Light</button>
+      <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">🌙 Dark</button>
       <div style="position:relative">
         <a href="#" class="basics-link" id="basicsLink" onclick="exitDemo();dismissCallout();return false">Basics &rarr;</a>
         <div class="basics-callout" id="basicsCallout">
@@ -1001,15 +1005,18 @@ function layoutDots(){resizeCanvas();renderVS()}
 function toggleTheme(){
   const html=document.documentElement;
   const btn=document.getElementById('themeBtn');
-  if(html.dataset.theme==='light'){
-    html.removeAttribute('data-theme');
-    btn.textContent='☀️ Light';
-  }else{
+  if(html.dataset.theme==='dark'){
     html.dataset.theme='light';
     btn.textContent='🌙 Dark';
+  }else{
+    html.dataset.theme='dark';
+    btn.textContent='☀️ Light';
   }
+  localStorage.setItem('vl-theme',html.dataset.theme);
   renderVS();
 }
+// Set button text on load
+(function(){if(document.documentElement.dataset.theme==='dark')document.getElementById('themeBtn').textContent='☀️ Light';else document.getElementById('themeBtn').textContent='🌙 Dark'})();
 
 let zoomLevel=1;
 function zoomIn(){zoomLevel=Math.min(1.5,zoomLevel+0.1);document.getElementById('flowContent').style.transform='scale('+zoomLevel+')'}

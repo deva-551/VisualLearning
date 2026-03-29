@@ -1,11 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
+<script>(function(){var t=localStorage.getItem('vl-theme');if(t)document.documentElement.dataset.theme=t})()</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Inside a Transformer — Visual Learning</title>
 <style>
-:root{--blue:#3b82f6;--purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316;--bg:#0a0a14;--s1:#111122;--s2:#181830;--s3:#1e1e3a;--b1:#22223a;--b2:#2e2e50;--text:#f0f0f8;--muted:#8888aa;--dim:#60607a;--glow:rgba(245,158,11,.12)}
+:root{--blue:#3b82f6;--purple:#8b5cf6;--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316}
+html[data-theme=light]{--bg:#f4f4f9;--s1:#ffffff;--s2:#f0f0f6;--s3:#e8e8f0;--b1:#d8d8e5;--b2:#c5c5d8;--text:#1a1a2e;--muted:#6e6e80;--dim:#9090a8;--glow:rgba(245,158,11,.08)}
+html[data-theme=dark]{--bg:#0a0a14;--s1:#111122;--s2:#181830;--s3:#1e1e3a;--b1:#22223a;--b2:#2e2e50;--text:#f0f0f8;--muted:#8888aa;--dim:#60607a;--glow:rgba(245,158,11,.12)}
+html[data-theme=light] .hero-section{background:radial-gradient(ellipse at 50% 0%,#fff0dd 0%,var(--bg) 70%)}
+html[data-theme=dark] .hero-section{background:radial-gradient(ellipse at 50% 0%,#1a0a0a 0%,var(--bg) 70%)}
+html[data-theme=light] .cta-section{background:radial-gradient(ellipse at 50% 100%,#fff0dd 0%,var(--bg) 70%)}
+html[data-theme=dark] .cta-section{background:radial-gradient(ellipse at 50% 100%,#1a0a0a 0%,var(--bg) 70%)}
 *{margin:0;padding:0;box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;background:var(--bg);color:var(--text);-webkit-font-smoothing:antialiased;min-height:100vh;overflow-x:hidden}
@@ -221,13 +228,13 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
 .grad-cyan{background:linear-gradient(90deg,#06b6d4,#3b82f6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .grad-green{background:linear-gradient(90deg,#34d399,#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .grad-pink{background:linear-gradient(90deg,#ec4899,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero-section{min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1a0a0a 0%,var(--bg) 70%)}
+.hero-section{min-height:100vh}
 .skip-link{margin-top:28px;font-size:15px;font-weight:500;color:var(--muted);text-decoration:none;letter-spacing:-.01em;transition:color .3s;padding:10px 24px;border:1px solid var(--b2);border-radius:100px}
 .skip-link:hover{color:var(--text);border-color:var(--dim)}
 .scroll-hint{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;color:var(--dim);font-size:13px;font-weight:500;letter-spacing:.02em;animation:float 2.5s ease-in-out infinite}
 @keyframes float{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
 .scroll-hint svg{width:24px;height:24px;stroke:var(--dim);stroke-width:2;fill:none}
-.cta-section{min-height:60vh;background:radial-gradient(ellipse at 50% 100%,#1a0a0a 0%,var(--bg) 70%)}
+.cta-section{min-height:60vh}
 .cta-btn{display:inline-block;margin-top:32px;padding:16px 40px;border-radius:100px;font-size:19px;font-weight:600;letter-spacing:-.01em;color:#fff;background:linear-gradient(135deg,#f59e0b,#ef4444);border:none;cursor:pointer;transition:all .3s;text-decoration:none}
 .cta-btn:hover{transform:scale(1.04);box-shadow:0 8px 40px rgba(245,158,11,.3)}
 
@@ -283,7 +290,7 @@ body{font-family:-apple-system,'SF Pro Display','Helvetica Neue',sans-serif;back
   <a href="index.html">&larr; All Topics</a>
   <span class="nav-title">Inside a Transformer</span>
   <div style="display:flex;align-items:center;gap:12px">
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">&#9728;&#65039; Light</button>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">&#127769; Dark</button>
     <a href="#" class="skip-link" style="padding:4px 12px;font-size:12px;margin:0;border-color:rgba(245,158,11,.5);color:var(--amber)" onclick="exitDemo();return false">Basics &rarr;</a>
   </div>
 </div>
@@ -494,9 +501,12 @@ function exitDemo(){
 
 function toggleTheme(){
   const h=document.documentElement;
-  if(h.dataset.theme==='light'){delete h.dataset.theme;themeBtn.innerHTML='&#9728;&#65039; Light'}
-  else{h.dataset.theme='light';themeBtn.innerHTML='&#127769; Dark'}
+  if(h.dataset.theme==='dark'){h.dataset.theme='light';themeBtn.innerHTML='&#127769; Dark'}
+  else{h.dataset.theme='dark';themeBtn.innerHTML='&#9728;&#65039; Light'}
+  localStorage.setItem('vl-theme',h.dataset.theme);
 }
+// Set button text on load
+(function(){if(document.documentElement.dataset.theme==='dark')themeBtn.innerHTML='&#9728;&#65039; Light'})();
 
 const TOKEN_COLORS=['#f59e0b','#3b82f6','#22c55e','#ef4444','#8b5cf6','#ec4899','#06b6d4','#f97316','#14b8a6','#eab308','#6366f1','#a855f7'];
 const PRED_COLORS=['var(--amber)','var(--blue)','var(--green)','var(--purple)','var(--pink)'];
@@ -798,7 +808,11 @@ async function runIteration(){
     $('iterStatus').classList.remove('show');
 
     // Show response section
-    $('responseBody').innerHTML='<span class="response-prompt">'+escHtml(originalPrompt)+' </span><span class="response-generated">'+escHtml(generatedWords.join(' '))+'</span>';
+    $('responseBody').innerHTML='<span class="response-prompt">'+escHtml(originalPrompt)+' </span><span class="response-generated">'+escHtml(generatedWords.join(' '))+'</span>'
+      +'<div style="margin-top:16px;padding:12px 16px;background:var(--s2);border:1px solid var(--b1);border-radius:10px;font-size:12px;color:var(--muted);line-height:1.6">'
+      +'<strong style="color:var(--text)">How does the model know when to stop?</strong><br>'
+      +'In this demo we stop after 6 words. But real LLMs have a special <strong style="color:var(--amber)">&lt;EOS&gt;</strong> (End of Sequence) token in their vocabulary. When the model predicts &lt;EOS&gt; as the next token, it means "I\'m done — the sentence is complete." The model learns when to produce this token during training.'
+      +'</div>';
     await delay(300);
     $('responseSection').classList.add('visible');
     $('responseSection').scrollIntoView({behavior:'smooth',block:'center'});
@@ -862,7 +876,7 @@ async function showDetailedStages(){
   activateDP('dp-token');
   const chipHtml=tokens.map((t,i)=>`<div class="token-chip" style="background:${TOKEN_COLORS[i%TOKEN_COLORS.length]}">${escHtml(t)}<span class="chip-id">#${getVocabId(t)}</span></div>`).join('');
   const c2=makeCard('var(--green)','Step 2',`Tokenize — ${tokens.length} Tokens`,
-    'Text is split into <strong>tokens</strong> from a ~50,000-word vocabulary. Common words stay whole; rare words get broken into subwords.',
+    'Text is split into <strong>tokens</strong> from a ~50,000-word vocabulary. Common words stay whole; rare words get broken into subwords. <strong>Same word = same token ID</strong> every time. Note: "The" (capital) and "the" (lowercase) are different tokens — the tokenizer is case-sensitive.',
     `<div class="token-chips" id="dc-chips">${chipHtml}</div>`);
   cards.appendChild(c2);await delay(50);c2.classList.add('visible');
   const chips=c2.querySelectorAll('.token-chip');
@@ -874,7 +888,7 @@ async function showDetailedStages(){
   const embeddings=tokens.map(t=>getEmbedding(t));
   const embedHtml=tokens.map((t,i)=>`<div class="embed-item" id="dei-${i}"><div class="embed-token" style="color:${TOKEN_COLORS[i%TOKEN_COLORS.length]}">${escHtml(t)}</div><div class="embed-vec">[${embeddings[i].slice(0,3).join(', ')}...]</div><div class="embed-bar" style="width:0;background:${TOKEN_COLORS[i%TOKEN_COLORS.length]}"></div></div>`).join('');
   const c3=makeCard('var(--amber)','Step 3','Embed — Meaning Vectors',
-    'Each token becomes a <strong>vector</strong> — a list of numbers capturing meaning. Similar words get similar vectors.',
+    'Each token becomes a <strong>vector</strong> — a list of numbers capturing meaning. <strong>Same token always gets the same base vector.</strong> But the model also adds <strong>positional encoding</strong> — a unique signal for each position (1st word, 2nd word, etc.) — so "the" at position 1 and "the" at position 5 end up with slightly different vectors. This is how the model knows <strong>word order</strong>.',
     `<div class="embed-grid">${embedHtml}</div>`);
   cards.appendChild(c3);await delay(50);c3.classList.add('visible');
   const eitems=c3.querySelectorAll('.embed-item');
